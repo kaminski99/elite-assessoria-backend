@@ -26,27 +26,14 @@ function gerarHorarios(dataStr) {
     horarios.push(String(h).padStart(2, '0') + ':00');
   }
 
-  // Se for hoje (no fuso de São Paulo), remove horários que já passaram
+  // Se for hoje (fuso Brasília UTC-3), remove horários que já passaram
   const agora = new Date();
-  const hoje = new Intl.DateTimeFormat('pt-BR', {
-    timeZone: 'America/Sao_Paulo',
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-  })
-    .format(agora)
-    .split('/')
-    .reverse()
-    .join('-');
+  const offsetBrasilia = -3 * 60; // UTC-3 em minutos
+  const agoraBrasilia = new Date(agora.getTime() + (offsetBrasilia - agora.getTimezoneOffset()) * 60000);
+  const hojeStr = agoraBrasilia.toISOString().slice(0, 10);
+  const horaAtual = agoraBrasilia.getHours();
 
-  if (dataStr === hoje) {
-    const horaAtual = Number(
-      new Intl.DateTimeFormat('pt-BR', {
-        timeZone: 'America/Sao_Paulo',
-        hour: '2-digit',
-        hour12: false,
-      }).format(agora)
-    );
+  if (dataStr === hojeStr) {
     return horarios.filter((h) => parseInt(h) > horaAtual);
   }
 
