@@ -26,10 +26,27 @@ function gerarHorarios(dataStr) {
     horarios.push(String(h).padStart(2, '0') + ':00');
   }
 
-  // Se for hoje, remove horários que já passaram
-  const hoje = new Date().toISOString().slice(0, 10);
+  // Se for hoje (no fuso de São Paulo), remove horários que já passaram
+  const agora = new Date();
+  const hoje = new Intl.DateTimeFormat('pt-BR', {
+    timeZone: 'America/Sao_Paulo',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  })
+    .format(agora)
+    .split('/')
+    .reverse()
+    .join('-');
+
   if (dataStr === hoje) {
-    const horaAtual = new Date().getUTCHours() - 3; // fuso de Brasília (UTC-3)
+    const horaAtual = Number(
+      new Intl.DateTimeFormat('pt-BR', {
+        timeZone: 'America/Sao_Paulo',
+        hour: '2-digit',
+        hour12: false,
+      }).format(agora)
+    );
     return horarios.filter((h) => parseInt(h) > horaAtual);
   }
 
@@ -149,7 +166,6 @@ module.exports = {
   listar,
   confirmar,
   cancelar,
-  // exportados para reuso no controller de triagens (aprovar cria um agendamento)
   gerarHorarios,
   dataValida,
   horaValida,
