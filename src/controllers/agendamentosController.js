@@ -26,12 +26,11 @@ function gerarHorarios(dataStr) {
     horarios.push(String(h).padStart(2, '0') + ':00');
   }
 
-  // Se for hoje (fuso Brasília UTC-3), remove horários que já passaram
-  const agora = new Date();
-  const offsetBrasilia = -3 * 60; // UTC-3 em minutos
-  const agoraBrasilia = new Date(agora.getTime() + (offsetBrasilia - agora.getTimezoneOffset()) * 60000);
+  // Hora atual em Brasília (UTC-3)
+  const agoraUTC = Date.now();
+  const agoraBrasilia = new Date(agoraUTC - 3 * 60 * 60 * 1000);
   const hojeStr = agoraBrasilia.toISOString().slice(0, 10);
-  const horaAtual = agoraBrasilia.getHours();
+  const horaAtual = agoraBrasilia.getUTCHours();
 
   if (dataStr === hojeStr) {
     return horarios.filter((h) => parseInt(h) > horaAtual);
@@ -39,7 +38,6 @@ function gerarHorarios(dataStr) {
 
   return horarios;
 }
-
 function dataValida(dataStr) {
   return /^\d{4}-\d{2}-\d{2}$/.test(dataStr) && !Number.isNaN(new Date(`${dataStr}T00:00:00Z`).getTime());
 }
