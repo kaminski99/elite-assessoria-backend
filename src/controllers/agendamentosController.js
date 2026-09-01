@@ -25,6 +25,14 @@ function gerarHorarios(dataStr) {
   for (let h = inicio; h < fim; h++) {
     horarios.push(String(h).padStart(2, '0') + ':00');
   }
+
+  // Se for hoje, remove horários que já passaram
+  const hoje = new Date().toISOString().slice(0, 10);
+  if (dataStr === hoje) {
+    const horaAtual = new Date().getUTCHours() - 3; // fuso de Brasília (UTC-3)
+    return horarios.filter((h) => parseInt(h) > horaAtual);
+  }
+
   return horarios;
 }
 
